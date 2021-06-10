@@ -12,3 +12,6 @@ browser:
 
 clear:
 	rm phps.log
+
+test:
+	php artisan test
