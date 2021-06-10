@@ -20,7 +20,7 @@ Route::post('/add', [UrlController::class, 'store']);
 
 Route::get('/urls', [UrlController::class, 'index']);
 
-Route::get('/urls/{id}', [UrlController::class, 'show']);
+Route::get('/urls/{id}', [UrlController::class, 'show'])->where('id', '[0-9]+');
 
 Route::get('/dbconnect', function () {
     try {

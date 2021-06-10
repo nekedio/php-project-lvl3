@@ -31,7 +31,14 @@ class UrlController extends Controller
      */
     public function create(Request $request)
     {
-        // flash('Welcome Aboard!');
+        if (!Schema::hasTable('urls')) {
+            Schema::create('urls', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->unique();
+                $table->dateTime('updated_at');
+                $table->dateTime('created_at');
+            });
+        }
         $token = $request->session()->token();
         $token = csrf_token();
         return view('home', ['test' => 'Test!!!']);
@@ -45,14 +52,6 @@ class UrlController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Schema::hasTable('urls')) {
-            Schema::create('urls', function (Blueprint $table) {
-                $table->id();
-                $table->string('name')->unique();
-                $table->dateTime('updated_at');
-                $table->dateTime('created_at');
-            });
-        }
 
         $data = parse_url($request->input('url.name'));
         $url['name'] = ($data['scheme'] ?? '') . '://' . ($data['host'] ?? '');
@@ -81,10 +80,10 @@ class UrlController extends Controller
      */
     public function show($id)
     {
-        echo "url " . $id;
+        if ($id > DB::table('urls')->count()) {
+            abort(404);
+        }
         [$url] = DB::table('urls')->select('id', 'name', 'updated_at')->where('id', '=', $id)->get()->all();
-        //dump($url->name);
-        print_r($url->name);
         return view('show', ['url' => $url]);
     }
 
