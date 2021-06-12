@@ -1,5 +1,7 @@
 setup:
 	composer install
+	cp .env.example .env
+	php artisan key:gen --ansi
 	touch database/database.sqlite
 	php artisan migrate
 
@@ -19,4 +21,4 @@ clear:
 	rm phps.log
 
 test:
-	php artisan test
+	php artisan test --testsuite=Feature
