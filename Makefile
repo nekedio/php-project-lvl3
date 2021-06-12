@@ -1,3 +1,8 @@
+setup:
+	composer install
+	touch database/database.sqlite
+	php artisan migrate
+
 install:
 	composer install
 

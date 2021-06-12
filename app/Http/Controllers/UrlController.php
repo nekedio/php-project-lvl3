@@ -31,14 +31,6 @@ class UrlController extends Controller
      */
     public function create(Request $request)
     {
-        if (!Schema::hasTable('urls')) {
-            Schema::create('urls', function (Blueprint $table) {
-                $table->id();
-                $table->string('name')->unique();
-                $table->dateTime('updated_at');
-                $table->dateTime('created_at');
-            });
-        }
         $token = $request->session()->token();
         $token = csrf_token();
         return view('home', ['test' => 'Test!!!']);
@@ -52,7 +44,6 @@ class UrlController extends Controller
      */
     public function store(Request $request)
     {
-
         $data = parse_url($request->input('url.name'));
         $url['name'] = ($data['scheme'] ?? '') . '://' . ($data['host'] ?? '');
         $now = Carbon::now('Europe/Moscow');
@@ -61,11 +52,11 @@ class UrlController extends Controller
             'name' => 'url|unique:urls,name',
         ])->validate();
 
-        DB::table('urls')->upsert([
+        DB::table('urls')->insert([
             'name' => $url['name'],
             'created_at' => $now,
             'updated_at' => $now,
-        ], 'id');
+        ]);
 
         flash('URL добавлен!')->success();
 
