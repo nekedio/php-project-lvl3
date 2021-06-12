@@ -1,12 +1,10 @@
-name: Master workflow
+# Name of workflow
+name: PHP CI
 
+# Trigger the workflow on push or pull request
 on:
-  pull_request:
-    branches:
-      - 'master'
-  push:
-    branches:
-      - 'master'
+  - push
+  - pull_request
 
 jobs:
   build:
@@ -24,4 +22,4 @@ jobs:
       run: make lint
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      run: make tests
+      run: make test
