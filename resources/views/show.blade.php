@@ -69,10 +69,44 @@
 							<td scope="col">200</td>
 						</tr>
 					</tbody>
-
+				</table>
+			</div>
+			@php
+			$jsonUrl = json_encode($url, TRUE);
+			@endphp
+			<div class="container-fluid py-5">
+				<h1>Проверка</h1>
+				<form action="/urls/{{$url->id}}/checks" method='post'>
+					@csrf
+					<button type="submit" class="btn btn-primary mb-2">Запустить проверку!</button>
+				</form>
+					<table class="table table-primary table-bordered border-primary">
+					<thead>
+						<tr>
+							<th scope="col">ID</th>
+							<th scope="col">Код ответа</th>
+							<th scope="col">h1</th>
+							<th scope="col">keywords</th>
+							<th scope="col">description</th>
+							<th scope="col">Дата создания</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach ($url_checks ?? [] as $check)
+						<tr>
+						<!-- <?php print_r($check) ?> -->
+							<th scope="row">{{$check->id}}</th>
+							<td>{{$check->status_code}}</td>
+							<td>{{$check->h1}}</td>
+							<td>{{$check->keywords}}</td>
+							<td>{{$check->description}}</td>
+							<td>{{$check->created_at}}</td>
+						</tr>
+						@endforeach
 					</tbody>
 				</table>
 			</div>
+
 		</main>
 
 

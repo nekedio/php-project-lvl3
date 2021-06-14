@@ -16,11 +16,13 @@ use App\Http\Controllers\UrlController;
 
 Route::get('/', [UrlController::class, 'create']);
 
-Route::post('/add', [UrlController::class, 'store']);
+Route::post('/add', [UrlController::class, 'storeUrl']);
 
 Route::get('/urls', [UrlController::class, 'index']);
 
 Route::get('/urls/{id}', [UrlController::class, 'show'])->where('id', '[0-9]+');
+
+Route::post('/urls/{id}/checks', [UrlController::class, 'storeChecks'])->where('id', '[0-9]+');
 
 Route::get('/dbconnect', function () {
     try {

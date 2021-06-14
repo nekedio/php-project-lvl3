@@ -19,6 +19,18 @@ class CreateFlightsTable extends Migration
             $table->dateTime('updated_at');
             $table->dateTime('created_at');
         });
+
+        Schema::create('urls_checks', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('url_id');
+            $table->foreign('url_id')->references('id')->on('urls');
+            $table->string('status_code');
+            $table->string('h1');
+            $table->string('keywords');
+            $table->string('description');
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
+        });
     }
 
     /**

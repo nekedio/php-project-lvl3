@@ -45,4 +45,11 @@ class UrlTest extends TestCase
 
         $this->assertSame(1, DB::table('urls')->count());
     }
+
+    public function testChacks()
+    {
+        $this->post('/add', ['url' => ['name' => 'http://test.com']]);
+        $responsePost = $this->post('/urls/1/checks');
+        $responsePost->assertStatus(302);
+    }
 }

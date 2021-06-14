@@ -70,9 +70,6 @@
 							<form action="/add" method='post'>
 								@csrf
 								<div class="d-grid">
-									@php
-									$name = '111';
-									@endphp
 									<input name="url[name]" type="text" class="mb-3 form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="https://www.your.website.com">
 									<button type="submit" class="btn btn-warning">Отправить сайт на анализ!</button>
 								</div>
