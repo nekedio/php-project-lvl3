@@ -82,9 +82,9 @@ class UrlController extends Controller
     {
         // dump($response);
         [$url] = DB::table('urls')->select('*')->where('id', '=', $id)->get()->all();
-        // $response = Http::get($url->name);
-        // $status_code = $response->status();
-        $status_code = 200;
+        $response = Http::get($url->name);
+        $status_code = $response->status();
+        // $status_code = 200;
         $now = Carbon::now('Europe/Moscow');
 
         DB::table('urls_checks')->insert([
