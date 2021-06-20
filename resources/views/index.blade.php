@@ -67,8 +67,8 @@
 						<tr>
 							<th scope="row">{{$url->id}}</th>
 							<td><a href='urls/{{$url->id}}'>{{$url->name}}</a></td>
-							<td>{{$url->updated_at}}</td>
-							<td>200</td>
+							<td>{{$url->created_at ?? '-'}}</td>
+							<td>{{$url->status_code ?? '-'}}</td>
 						</tr>
 						@endforeach
 					</tbody>

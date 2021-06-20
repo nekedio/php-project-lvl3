@@ -6,50 +6,60 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use App\Models\Url;
+use Carbon\Carbon;
 
 class UrlTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @return void
-     */
-    public function testPages()
+    protected function setUp(): void
     {
-        $responseHomePage = $this->get('/');
-        $responseHomePage->assertStatus(200);
+        parent::setUp();
 
-        $responseUrlsPage = $this->get('/urls');
-        $responseUrlsPage->assertStatus(200);
-
-        $responsePost = $this->post('/add', ['url' => ['name' => 'http://test.com']]);
-        $responsePost->assertStatus(302);
-
-        $responseUrlsIdPage = $this->get('/urls/1');
-        $responseUrlsIdPage->assertStatus(200);
-
-        $responseUrlsIdPage = $this->get('/urls/2');
-        $responseUrlsIdPage->assertStatus(404);
+        $now = Carbon::now('Europe/Moscow');
+        $faker = \Faker\Factory::create();
+        DB::table('urls')->insert([
+            'name' => $faker->url,
+            'created_at' => $faker->dateTime($max = 'now', $timezone = null),
+            'updated_at' => $faker->dateTime($max = 'now', $timezone = null),
+        ]);
     }
 
-    public function testAddAndValidationUrl()
+    public function testCreate()
     {
-        $responseHomePage = $this->get('/');
-        $this->post('/add', ['url' => ['name' => 'test']]);
-
-        $this->assertSame(0, DB::table('urls')->count());
-
-        $this->post('/add', ['url' => ['name' => 'http://test.com']]);
-        $this->post('/add', ['url' => ['name' => 'http://test.com']]);
-        $this->post('/add', ['url' => ['name' => 'test']]);
-
-        $this->assertSame(1, DB::table('urls')->count());
+        $response = $this->get('/');
+        $response->assertOk();
     }
 
-    public function testChacks()
+    public function testStoreUrl()
     {
-        $this->post('/add', ['url' => ['name' => 'http://test.com']]);
-        $responsePost = $this->post('/urls/1/checks');
-        $responsePost->assertStatus(302);
+        $data = ['url' => ['name' => 'http://google.com']];
+        $response = $this->post('/add', $data);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('urls', $data['url']);
+    }
+
+    public function testShow()
+    {
+        $response = $this->get('/urls/1');
+        $response->assertOk();
+    }
+
+    public function testIndex()
+    {
+        $response = $this->get('/urls');
+        $response->assertOk();
+    }
+
+    public function testStoreChecks()
+    {
+        HTTP::fake();
+        $response = $this->post('/urls/1/checks');
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
     }
 }

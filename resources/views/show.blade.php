@@ -61,12 +61,12 @@
 							<td scope="col">{{$url->name}}</td>
 						</tr>
 						<tr>
-							<th scope="col">Последняя проверка</th>
-							<td scope="col">{{$url->updated_at}}</td>
+							<th scope="col">Дата создания</th>
+							<td scope="col">{{$url->created_at}}</td>
 						</tr>
 						<tr>
-							<th scope="col">Код ответа</th>
-							<td scope="col">200</td>
+							<th scope="col">Дата обновления</th>
+							<td scope="col">{{$url->updated_at}}</td>
 						</tr>
 					</tbody>
 				</table>

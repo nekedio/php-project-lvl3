@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Middleware\VerifyCsrfToken;
 use Carbon\Carbon;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class UrlController extends Controller
 {
@@ -20,7 +19,17 @@ class UrlController extends Controller
      */
     public function index()
     {
-        $urls = DB::table('urls')->select('id', 'name', 'updated_at')->get();
+        $urls = DB::table('urls')
+            ->leftJoin('urls_checks', 'urls.id', '=', 'urls_checks.url_id')
+            ->select(
+                'urls.id',
+                'urls.name',
+                DB::raw('MAX(urls_checks.created_at) AS created_at'),
+                'urls_checks.status_code'
+            )
+            ->groupBy('urls.id', 'urls_checks.status_code')
+            ->orderBy('urls.id')
+            ->get();
         return view('index', ['urls' => $urls]);
     }
 
@@ -33,7 +42,7 @@ class UrlController extends Controller
     {
         $token = $request->session()->token();
         $token = csrf_token();
-        return view('home', ['test' => 'Test!!!']);
+        return view('home');
     }
 
     /**
@@ -71,33 +80,22 @@ class UrlController extends Controller
      */
     public function storeChecks($id, Request $request)
     {
-        // echo "Yes " . $id;
-        // dump($request);
-        // $data = parse_url($request->input('url.name'));
-        // $url['name'] = ($data['scheme'] ?? '') . '://' . ($data['host'] ?? '');
+        // dump($response);
+        [$url] = DB::table('urls')->select('*')->where('id', '=', $id)->get()->all();
+        // $response = Http::get($url->name);
+        // $status_code = $response->status();
+        $status_code = 200;
         $now = Carbon::now('Europe/Moscow');
-        //
+
         DB::table('urls_checks')->insert([
             'url_id' => $id,
-            'status_code' => 'status_code',
+            'status_code' => $status_code,
             'h1' => 'h1',
             'keywords' => 'keywosrds',
             'description' => 'description',
             'updated_at' => $now,
             'created_at' => $now,
         ]);
-        // $validator = Validator::make($url, [
-        //     'name' => 'url|unique:urls,name',
-        // ])->validate();
-        //
-        // DB::table('urls')->insert([
-        //     'name' => $url['name'],
-        //     'created_at' => $now,
-        //     'updated_at' => $now,
-        // ]);
-        //
-        // flash('URL добавлен!')->success();
-        //
         return redirect('/urls/' . $id);
     }
 
@@ -113,7 +111,9 @@ class UrlController extends Controller
         if ($id > DB::table('urls')->count()) {
             abort(404);
         }
-        [$url] = DB::table('urls')->select('id', 'name', 'updated_at')->where('id', '=', $id)->get()->all();
+        [$url] = DB::table('urls')
+            ->select('id', 'name', 'updated_at', 'created_at')
+            ->where('id', '=', $id)->get()->all();
         $url_checks = DB::table('urls_checks')->select(
             'id',
             'status_code',
