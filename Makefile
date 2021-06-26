@@ -23,12 +23,12 @@ clear:
 test:
 	php artisan test --testsuite=Feature
 
-resetSqliteBD:
+resetSqliteDB:
 	rm database/database.sqlite || true
 	touch database/database.sqlite
 	php artisan migrate
 
-resetPsqlBD:
+resetPsqlDB:
 	dropdb seo_analyzer || true
 	createdb seo_analyzer
 	php artisan migrate
