@@ -16,8 +16,8 @@ class CreateFlightsTable extends Migration
         Schema::create('urls', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
-            $table->dateTime('updated_at');
-            $table->dateTime('created_at');
+            $table->dateTime('updated_at')->nullable();
+            $table->dateTime('created_at')->nullable();
         });
 
         Schema::create('urls_checks', function (Blueprint $table) {
