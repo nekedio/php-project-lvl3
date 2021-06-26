@@ -25,11 +25,11 @@ class CreateFlightsTable extends Migration
             $table->unsignedBigInteger('url_id');
             $table->foreign('url_id')->references('id')->on('urls');
             $table->string('status_code');
-            $table->string('h1');
-            $table->string('keywords');
-            $table->string('description');
-            $table->dateTime('updated_at');
-            $table->dateTime('created_at');
+            $table->string('h1')->nullable();
+            $table->string('keywords')->nullable();
+            $table->string('description')->nullable();
+            $table->dateTime('updated_at')->nullable();
+            $table->dateTime('created_at')->nullable();
         });
     }
 
