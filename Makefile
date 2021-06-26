@@ -24,7 +24,7 @@ test:
 	php artisan test --testsuite=Feature
 
 resetSqliteBD:
-	rm database/database.sqlite
+	rm database/database.sqlite || true
 	touch database/database.sqlite
 	php artisan migrate
 

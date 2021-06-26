@@ -14,15 +14,15 @@ use App\Http\Controllers\UrlController;
 |
 */
 
-Route::get('/', [UrlController::class, 'create']);
+Route::get('/', [UrlController::class, 'create'])->name('home');
 
-Route::post('/add', [UrlController::class, 'storeUrl']);
+Route::post('/add', [UrlController::class, 'storeUrl'])->name('storeUrl');
 
-Route::get('/urls', [UrlController::class, 'index']);
+Route::get('/urls', [UrlController::class, 'index'])->name('urls');
 
-Route::get('/urls/{id}', [UrlController::class, 'show'])->where('id', '[0-9]+');
+Route::get('/urls/{id}', [UrlController::class, 'show'])->where('id', '[0-9]+')->name('showUrl');
 
-Route::post('/urls/{id}/checks', [UrlController::class, 'storeChecks'])->where('id', '[0-9]+');
+Route::post('/urls/{id}/checks', [UrlController::class, 'storeChecks'])->where('id', '[0-9]+')->name('checksUrl');
 
 Route::get('/dbconnect', function () {
     try {

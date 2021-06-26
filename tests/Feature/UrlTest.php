@@ -57,9 +57,17 @@ class UrlTest extends TestCase
 
     public function testStoreChecks()
     {
-        HTTP::fake();
+        $headers = [
+            'h1' => 'h1',
+            'keywords' => 'keywords',
+            'description' => 'description',
+        ];
+
+        HTTP::fake(['*' => Http::response('test', 200, $headers)]);
         $response = $this->post('/urls/1/checks');
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
+
+        $this->assertDatabaseHas('urls_checks', $headers);
     }
 }

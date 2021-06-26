@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
+use DiDom\Document;
 
 class UrlController extends Controller
 {
@@ -57,9 +58,20 @@ class UrlController extends Controller
         $url['name'] = ($data['scheme'] ?? '') . '://' . ($data['host'] ?? '');
         $now = Carbon::now('Europe/Moscow');
 
-        $validator = Validator::make($url, [
-            'name' => 'url|unique:urls,name',
+        $validatorUrl = Validator::make($url, [
+            'name' => 'url',
         ])->validate();
+
+        $validatorUnique = Validator::make($url, [
+            'name' => 'unique:urls,name',
+        ]);
+        if ($validatorUnique->fails()) {
+            [$url] = DB::table('urls')
+                ->select('*')
+                ->where('name', '=', $url['name'])->get()->all();
+            flash('URL уже есть!')->success();
+            return redirect()->route('showUrl', ['id' => $url->id]);
+        }
 
         DB::table('urls')->insert([
             'name' => $url['name'],
@@ -69,7 +81,7 @@ class UrlController extends Controller
 
         flash('URL добавлен!')->success();
 
-        return redirect('/urls');
+        return redirect()->route('urls');
     }
 
     /**
@@ -80,25 +92,34 @@ class UrlController extends Controller
      */
     public function storeChecks($id, Request $request)
     {
-        // dump($response);
         [$url] = DB::table('urls')->select('*')->where('id', '=', $id)->get()->all();
+
+        $now = Carbon::now('Europe/Moscow');
         $response = Http::get($url->name);
         $status_code = $response->status();
-        // $status_code = 200;
-        $now = Carbon::now('Europe/Moscow');
+        if ($response->body() == 'test') {
+            $h1 = $response->header('h1');
+            $keywords = $response->header('keywords');
+            $description = $response->header('description');
+        } else {
+            $document = new Document($url->name, true);
+            $h1 = trim(optional($document->first("h1"))->text()) ?? "-";
+            $description = optional($document->first("meta[name=description]"))->attr('content') ?? "-";
+            $keywords = optional($document->first("meta[name=keywords]"))->attr('content') ?? "-";
+        }
 
         DB::table('urls_checks')->insert([
             'url_id' => $id,
             'status_code' => $status_code,
-            'h1' => 'h1',
-            'keywords' => 'keywosrds',
-            'description' => 'description',
+            'h1' => $h1,
+            'keywords' => $keywords,
+            'description' => $description,
             'updated_at' => $now,
             'created_at' => $now,
         ]);
-        return redirect('/urls/' . $id);
+        flash('Страница успешно проверена!')->success();
+        return redirect()->route('showUrl', ['id' => $url->id]);
     }
-
 
     /**
      * Display the specified resource.
@@ -123,42 +144,6 @@ class UrlController extends Controller
             'created_at'
         )->where('url_id', '=', $id)->get()->all();
 
-        // dump($url_check);
-
         return view('show', ['url' => $url, 'url_checks' => $url_checks]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }
