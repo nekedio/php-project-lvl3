@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UrlController;
+use App\Http\Controllers\CheckController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,13 +17,13 @@ use App\Http\Controllers\UrlController;
 
 Route::get('/', [UrlController::class, 'create'])->name('home');
 
-Route::post('/add', [UrlController::class, 'storeUrl'])->name('storeUrl');
+Route::post('/add', [UrlController::class, 'store'])->name('storeUrl');
 
 Route::get('/urls', [UrlController::class, 'index'])->name('urls');
 
 Route::get('/urls/{id}', [UrlController::class, 'show'])->where('id', '[0-9]+')->name('showUrl');
 
-Route::post('/urls/{id}/checks', [UrlController::class, 'storeChecks'])->where('id', '[0-9]+')->name('checksUrl');
+Route::post('/urls/{id}/checks', [CheckController::class, 'store'])->where('id', '[0-9]+')->name('checksUrl');
 
 Route::get('/dbconnect', function () {
     try {
