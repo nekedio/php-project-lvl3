@@ -68,6 +68,6 @@ class UrlTest extends TestCase
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
-        $this->assertDatabaseHas('urls_checks', $headers);
+        $this->assertDatabaseHas('url_checks', $headers);
     }
 }

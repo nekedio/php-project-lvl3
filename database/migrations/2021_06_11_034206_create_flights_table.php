@@ -20,7 +20,7 @@ class CreateFlightsTable extends Migration
             $table->dateTime('created_at')->nullable();
         });
 
-        Schema::create('urls_checks', function (Blueprint $table) {
+        Schema::create('url_checks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('url_id');
             $table->foreign('url_id')->references('id')->on('urls');

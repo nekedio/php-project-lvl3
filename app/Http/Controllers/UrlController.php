@@ -21,14 +21,14 @@ class UrlController extends Controller
     public function index()
     {
         $urls = DB::table('urls')
-            ->leftJoin('urls_checks', 'urls.id', '=', 'urls_checks.url_id')
+            ->leftJoin('url_checks', 'urls.id', '=', 'url_checks.url_id')
             ->select(
                 'urls.id',
                 'urls.name',
-                DB::raw('MAX(urls_checks.created_at) AS created_at'),
-                'urls_checks.status_code'
+                DB::raw('MAX(url_checks.created_at) AS created_at'),
+                'url_checks.status_code'
             )
-            ->groupBy('urls.id', 'urls_checks.status_code')
+            ->groupBy('urls.id', 'url_checks.status_code')
             ->orderBy('urls.id')
             ->get();
         return view('index', ['urls' => $urls]);
@@ -108,7 +108,7 @@ class UrlController extends Controller
             $keywords = optional($document->first("meta[name=keywords]"))->attr('content') ?? "-";
         }
 
-        DB::table('urls_checks')->insert([
+        DB::table('url_checks')->insert([
             'url_id' => $id,
             'status_code' => $status_code,
             'h1' => $h1,
@@ -135,7 +135,7 @@ class UrlController extends Controller
         [$url] = DB::table('urls')
             ->select('id', 'name', 'updated_at', 'created_at')
             ->where('id', '=', $id)->get()->all();
-        $url_checks = DB::table('urls_checks')->select(
+        $url_checks = DB::table('url_checks')->select(
             'id',
             'status_code',
             'h1',
