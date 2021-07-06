@@ -15,19 +15,14 @@ class CheckController extends Controller
     {
         [$url] = DB::table('urls')->select('*')->where('id', '=', $id)->get()->all();
 
-        $now = Carbon::now('Europe/Moscow');
         $response = Http::get($url->name);
+        $document = new Document($response->body());
+
+        $h1 = trim(optional($document->first("h1"))->text()) ?? "-";
+        $description = optional($document->first("meta[name=description]"))->attr('content') ?? "-";
+        $keywords = optional($document->first("meta[name=keywords]"))->attr('content') ?? "-";
+        $now = Carbon::now('Europe/Moscow');
         $status_code = $response->status();
-        if ($response->body() == 'test') {
-            $h1 = $response->header('h1');
-            $keywords = $response->header('keywords');
-            $description = $response->header('description');
-        } else {
-            $document = new Document($url->name, true);
-            $h1 = trim(optional($document->first("h1"))->text()) ?? "-";
-            $description = optional($document->first("meta[name=description]"))->attr('content') ?? "-";
-            $keywords = optional($document->first("meta[name=keywords]"))->attr('content') ?? "-";
-        }
 
         DB::table('url_checks')->insert([
             'url_id' => $id,
