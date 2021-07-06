@@ -52,6 +52,7 @@ class UrlController extends Controller
     public function store(Request $request)
     {
         $data = parse_url($request->input('url.name'));
+        $url = [];
         $url['name'] = ($data['scheme'] ?? '') . '://' . ($data['host'] ?? '');
         $now = Carbon::now('Europe/Moscow');
 

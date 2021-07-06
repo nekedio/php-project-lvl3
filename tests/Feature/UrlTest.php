@@ -51,7 +51,7 @@ class UrlTest extends TestCase
         $response = $this->post('urls', $data);
         $countAfter = DB::table('urls')->count();
 
-        $this->assertSame($countBefore, $countAfter);
+        $this->assertEquals($countBefore, $countAfter);
         $response->assertRedirect();
     }
 
@@ -75,9 +75,9 @@ class UrlTest extends TestCase
             'description' => "statements of great people",
         ];
 
-        $pageHtml = file_get_contents("tests/fixtures/index.html");
+        $pageHtml = file_get_contents("tests/fixtures/index.html") ?? "";
 
-        HTTP::fake(['*' => Http::response($pageHtml, 200)]);
+        HTTP::fake(['*' => Http::response((string) $pageHtml, 200)]);
         $response = $this->post('/urls/1/checks');
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
