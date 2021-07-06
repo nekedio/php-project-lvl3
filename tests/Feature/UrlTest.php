@@ -43,6 +43,18 @@ class UrlTest extends TestCase
         $this->assertDatabaseHas('urls', $data['url']);
     }
 
+    public function testStoreExistingUrl()
+    {
+        $data = ['url' => ['name' => 'http://google.com']];
+        $response = $this->post('urls', $data);
+        $countBefore = DB::table('urls')->count();
+        $response = $this->post('urls', $data);
+        $countAfter = DB::table('urls')->count();
+        
+        $this->assertSame($countBefore, $countAfter);
+        $response->assertRedirect();
+    }
+
     public function testShow()
     {
         $response = $this->get('/urls/1');
