@@ -27,13 +27,13 @@ class UrlTest extends TestCase
         ]);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $response = $this->get('/');
         $response->assertOk();
     }
 
-    public function testStoreUrl()
+    public function testStoreUrl(): void
     {
         $data = ['url' => ['name' => 'http://google.com']];
         $response = $this->post('urls', $data);
@@ -43,7 +43,7 @@ class UrlTest extends TestCase
         $this->assertDatabaseHas('urls', $data['url']);
     }
 
-    public function testStoreExistingUrl()
+    public function testStoreExistingUrl(): void
     {
         $data = ['url' => ['name' => 'http://google.com']];
         $response = $this->post('urls', $data);
@@ -55,19 +55,19 @@ class UrlTest extends TestCase
         $response->assertRedirect();
     }
 
-    public function testShow()
+    public function testShow(): void
     {
         $response = $this->get('/urls/1');
         $response->assertOk();
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $response = $this->get('/urls');
         $response->assertOk();
     }
 
-    public function testStoreChecks()
+    public function testStoreChecks(): void
     {
         $data = [
             'h1' => "Do not expect a miracle, miracles yourself!",
