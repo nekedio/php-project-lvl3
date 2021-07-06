@@ -39,6 +39,6 @@ class CheckController extends Controller
             'created_at' => $now,
         ]);
         flash('Страница успешно проверена!')->success();
-        return redirect()->route('showUrl', ['id' => $url->id]);
+        return redirect()->route('urls.show', $url->id);
     }
 }

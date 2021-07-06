@@ -15,15 +15,16 @@ use App\Http\Controllers\CheckController;
 |
 */
 
-Route::get('/', [UrlController::class, 'create'])->name('home');
+Route::get('/', function () {
+    return view('home');
+});
 
-Route::post('/add', [UrlController::class, 'store'])->name('storeUrl');
+Route::resources([
+    'urls' => UrlController::class,
+    'urls.checks' => CheckController::class
+]);
 
-Route::get('/urls', [UrlController::class, 'index'])->name('urls');
-
-Route::get('/urls/{id}', [UrlController::class, 'show'])->where('id', '[0-9]+')->name('showUrl');
-
-Route::post('/urls/{id}/checks', [CheckController::class, 'store'])->where('id', '[0-9]+')->name('checksUrl');
+// Route::resource('checks', ChecksController::class);
 
 Route::get('/dbconnect', function () {
     try {

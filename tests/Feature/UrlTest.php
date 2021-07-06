@@ -36,7 +36,7 @@ class UrlTest extends TestCase
     public function testStoreUrl()
     {
         $data = ['url' => ['name' => 'http://google.com']];
-        $response = $this->post('/add', $data);
+        $response = $this->post('urls', $data);
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 

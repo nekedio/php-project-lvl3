@@ -67,7 +67,7 @@ class UrlController extends Controller
                 ->select('*')
                 ->where('name', '=', $url['name'])->get()->all();
             flash('URL уже есть!')->success();
-            return redirect()->route('showUrl', ['id' => $url->id]);
+            return redirect()->route('urls.show', ['id' => $url->id]);
         }
 
         DB::table('urls')->insert([
@@ -78,7 +78,7 @@ class UrlController extends Controller
 
         flash('URL добавлен!')->success();
 
-        return redirect()->route('urls');
+        return redirect()->route('urls.index');
     }
 
     /**
