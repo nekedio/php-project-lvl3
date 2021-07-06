@@ -50,7 +50,7 @@ class UrlTest extends TestCase
         $countBefore = DB::table('urls')->count();
         $response = $this->post('urls', $data);
         $countAfter = DB::table('urls')->count();
-        
+
         $this->assertSame($countBefore, $countAfter);
         $response->assertRedirect();
     }
