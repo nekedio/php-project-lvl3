@@ -11,7 +11,13 @@ use DiDom\Document;
 
 class CheckController extends Controller
 {
-    public function store($id, Request $request)
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(int $id, Request $request)
     {
         [$url] = DB::table('urls')->select('*')->where('id', '=', $id)->get()->all();
 
