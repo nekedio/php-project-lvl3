@@ -15,9 +15,7 @@ use App\Http\Controllers\CheckController;
 |
 */
 
-Route::get('/', function () {
-    return (string) View::make('home')->render();
-});
+Route::get('/', [UrlController::class, 'create']);
 
 Route::resources([
     'urls' => UrlController::class,
