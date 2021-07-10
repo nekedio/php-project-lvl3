@@ -22,21 +22,13 @@ class UrlTest extends TestCase
         $faker = \Faker\Factory::create();
         DB::table('urls')->insert([
             'name' => $faker->url,
-            'created_at' => $faker->dateTime($max = 'now', $timezone = null),
-            'updated_at' => $faker->dateTime($max = 'now', $timezone = null),
         ]);
-    }
-
-    public function testCreate(): void
-    {
-        $response = $this->get('/');
-        $response->assertOk();
     }
 
     public function testStoreUrl(): void
     {
         $data = ['url' => ['name' => 'http://google.com']];
-        $response = $this->post('urls', $data);
+        $response = $this->post(route('urls.store'), $data);
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
@@ -46,7 +38,7 @@ class UrlTest extends TestCase
     public function testStoreExistingUrl(): void
     {
         $data = ['url' => ['name' => 'http://google.com']];
-        $response = $this->post('urls', $data);
+        $response = $this->post(route('urls.store'), $data);
         $countBefore = DB::table('urls')->count();
         $response = $this->post('urls', $data);
         $countAfter = DB::table('urls')->count();
@@ -57,31 +49,13 @@ class UrlTest extends TestCase
 
     public function testShow(): void
     {
-        $response = $this->get('/urls/1');
+        $response = $this->get(route('urls.show', ['url' => 1]));
         $response->assertOk();
     }
 
     public function testIndex(): void
     {
-        $response = $this->get('/urls');
+        $response = $this->get(route('urls.index'));
         $response->assertOk();
-    }
-
-    public function testStoreChecks(): void
-    {
-        $data = [
-            'h1' => "Do not expect a miracle, miracles yourself!",
-            'keywords' => "test wow miracle",
-            'description' => "statements of great people",
-        ];
-
-        $pageHtml = file_get_contents("tests/fixtures/index.html") ?? "";
-
-        HTTP::fake(['*' => Http::response((string) $pageHtml, 200)]);
-        $response = $this->post('/urls/1/checks');
-        $response->assertSessionHasNoErrors();
-        $response->assertRedirect();
-
-        $this->assertDatabaseHas('url_checks', $data);
     }
 }

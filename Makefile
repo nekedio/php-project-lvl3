@@ -9,7 +9,7 @@ install:
 	composer install
 
 lint:
-	composer exec --verbose phpcs -- --standard=PSR12 app/Http/Controllers tests routes
+	composer phpcs
 
 start:
 	php -S localhost:8080 -t public public/index.php 2> phps.log &
@@ -21,14 +21,14 @@ clear:
 	rm phps.log
 
 test:
-	php artisan test --testsuite=Feature
+	php artisan test
 
-resetSqliteDB:
+reset-sqlite-db:
 	rm database/database.sqlite || true
 	touch database/database.sqlite
 	php artisan migrate
 
-resetPsqlDB:
+reset-psql-db:
 	dropdb seo_analyzer || true
 	createdb seo_analyzer
 	php artisan migrate
