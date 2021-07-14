@@ -32,18 +32,6 @@ class UrlController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function create(Request $request)
-    {
-        $token = $request->session()->token();
-        $token = csrf_token();
-        return view('home');
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

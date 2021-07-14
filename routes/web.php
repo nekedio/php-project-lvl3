@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UrlController;
 use App\Http\Controllers\UrlCheckController;
 
@@ -15,11 +16,8 @@ use App\Http\Controllers\UrlCheckController;
 |
 */
 
-Route::get('/', function () {
-    return View::make('home')->render();
-});
-
 Route::resources([
+    '/' => HomeController::class,
     'urls' => UrlController::class,
     'urls.checks' => UrlCheckController::class
 ]);
