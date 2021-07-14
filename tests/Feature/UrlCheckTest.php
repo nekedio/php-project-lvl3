@@ -2,46 +2,45 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use App\Models\Url;
-use Carbon\Carbon;
+use Exception;
 
-class CheckTest extends TestCase
+class UrlCheckTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $now = Carbon::now('Europe/Moscow');
         $faker = \Faker\Factory::create();
-        DB::table('urls')->insert([
+        DB::table('urls')->insertGetId([
             'name' => $faker->url,
-            'created_at' => $faker->dateTime($max = 'now', $timezone = null),
-            'updated_at' => $faker->dateTime($max = 'now', $timezone = null),
+            'id' => 1,
         ]);
     }
 
-    public function testStoreChecks(): void
+    public function testStoreUrlChecks(): void
     {
         $data = [
+            'id' => 1,
+            'url_id' => 1,
+            'status_code' => 200,
             'h1' => "Do not expect a miracle, miracles yourself!",
             'keywords' => "test wow miracle",
             'description' => "statements of great people",
         ];
 
-        $pageHtml = file_get_contents("tests/fixtures/index.html") ?? "";
+        $pageHtml = @file_get_contents("tests/fixtures/index.html");
 
-        HTTP::fake(['*' => Http::response((string) $pageHtml, 200)]);
+        if ($pageHtml === false) {
+            throw new Exception("Error opening a file with a fixture");
+        }
+
+        HTTP::fake(['*' => Http::response($pageHtml, 200)]);
         $response = $this->post(route('urls.checks.store', ['url' => 1]));
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
-
         $this->assertDatabaseHas('url_checks', $data);
     }
 }

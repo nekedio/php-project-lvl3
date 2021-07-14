@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UrlController;
-use App\Http\Controllers\CheckController;
+use App\Http\Controllers\UrlCheckController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +19,5 @@ Route::get('/', [UrlController::class, 'create']);
 
 Route::resources([
     'urls' => UrlController::class,
-    'urls.checks' => CheckController::class
+    'urls.checks' => UrlCheckController::class
 ]);
