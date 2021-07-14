@@ -8,7 +8,7 @@ class HomeTest extends TestCase
 {
     public function testHome(): void
     {
-        $response = $this->get(route('urls.create'));
+        $response = $this->get('/');
         $response->assertOk();
     }
 }
