@@ -16,7 +16,6 @@ class UrlCheckTest extends TestCase
         $faker = \Faker\Factory::create();
         DB::table('urls')->insertGetId([
             'name' => $faker->url,
-            'id' => 1,
         ]);
     }
 
@@ -31,7 +30,7 @@ class UrlCheckTest extends TestCase
             'description' => "statements of great people",
         ];
 
-        $pageHtml = @file_get_contents("tests/fixtures/index.html");
+        $pageHtml = file_get_contents("tests/fixtures/index.html");
 
         if ($pageHtml === false) {
             throw new Exception("Error opening a file with a fixture");

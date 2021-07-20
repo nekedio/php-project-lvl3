@@ -17,17 +17,24 @@ class UrlController extends Controller
      */
     public function index()
     {
-        $urls = DB::table('urls')
-            ->leftJoin('url_checks', 'urls.id', '=', 'url_checks.url_id')
-            ->select(
-                'urls.id',
-                'urls.name',
-                DB::raw('MAX(url_checks.created_at) AS created_at'),
-                'url_checks.status_code'
-            )
-            ->groupBy('urls.id', 'url_checks.status_code')
-            ->orderBy('urls.id')
+        $urls = DB::table('urls')->get();
+        $checks = DB::table('url_checks')->get();
+
+        $lastChecks = DB::table('url_checks')
+            ->select('url_id', 'status_code', DB::raw('MAX(created_at) AS last_check_at'))
+            ->groupBy('url_id', 'status_code')
             ->get();
+
+        $collectUrl = collect($urls);
+        $collectChecks = collect($lastChecks);
+
+        $collectUrl->map(function ($item, $key) use ($collectChecks) {
+            $lastCheck = $collectChecks->firstWhere('url_id', $item->id);
+            $item->status_code = $lastCheck->status_code ?? null;
+            $item->last_check_at = $lastCheck->last_check_at ?? null;
+            return;
+        });
+
         return view('index', ['urls' => $urls]);
     }
 
@@ -39,34 +46,29 @@ class UrlController extends Controller
      */
     public function store(Request $request)
     {
-        $data = parse_url($request->input('url.name'));
-        $url = [];
-        $url['name'] = ($data['scheme'] ?? '') . '://' . ($data['host'] ?? '');
-        $now = Carbon::now('Europe/Moscow');
+        $data = $request->validate(['url.name' => 'required|url']);
 
-        $validatorUrl = Validator::make($url, [
-            'name' => 'url',
-        ])->validate();
+        $urlName = $data['url']['name'];
+        $componentsUrl = parse_url(strtolower($urlName));
+        $scheme = $componentsUrl['scheme'] ?? '';
+        $host = $componentsUrl['host'] ?? '';
+        $name = "{$scheme}://{$host}";
 
-        $validatorUnique = Validator::make($url, [
-            'name' => 'unique:urls,name',
-        ]);
-        if ($validatorUnique->fails()) {
-            [$url] = DB::table('urls')
-                ->select('*')
-                ->where('name', '=', $url['name'])->get()->all();
+        $nameInDB = DB::table('urls')
+            ->where('name', $name)
+            ->first();
+        if ($nameInDB) {
             flash('URL уже есть!')->success();
-            return redirect()->route('urls.show', $url->id);
+            return redirect()->route('urls.show', $nameInDB->id);
         }
 
+        $now = Carbon::now('Europe/Moscow');
         DB::table('urls')->insert([
-            'name' => $url['name'],
+            'name' => strtolower($name),
             'created_at' => $now,
             'updated_at' => $now,
         ]);
-
         flash('URL добавлен!')->success();
-
         return redirect()->route('urls.index');
     }
 
@@ -78,12 +80,10 @@ class UrlController extends Controller
      */
     public function show($id)
     {
-        if ($id > DB::table('urls')->count()) {
-            abort(404);
-        }
-        [$url] = DB::table('urls')
-            ->select('id', 'name', 'updated_at', 'created_at')
-            ->where('id', '=', $id)->get()->all();
+        $url = DB::table('urls')->find($id);
+
+        abort_unless((bool) $url, 404);
+
         $url_checks = DB::table('url_checks')->select(
             'id',
             'status_code',
@@ -91,7 +91,7 @@ class UrlController extends Controller
             'keywords',
             'description',
             'created_at'
-        )->where('url_id', '=', $id)->get()->all();
+        )->where('url_id', $id)->get();
 
         return view('show', ['url' => $url, 'url_checks' => $url_checks]);
     }

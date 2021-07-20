@@ -28,12 +28,23 @@ class UrlTest extends TestCase
         $this->assertDatabaseHas('urls', $data['url']);
     }
 
+    public function testInvalidUrl(): void
+    {
+        $data = ['url' => ['name' => 'invalid_url']];
+        $countBefore = DB::table('urls')->count();
+        $response = $this->post(route('urls.store'), $data);
+        $countAfter = DB::table('urls')->count();
+
+        self::assertEquals($countBefore, $countAfter);
+        $response->assertRedirect();
+    }
+
     public function testStoreExistingUrl(): void
     {
         $data = ['url' => ['name' => 'http://google.com']];
         $response = $this->post(route('urls.store'), $data);
         $countBefore = DB::table('urls')->count();
-        $response = $this->post('urls', $data);
+        $response = $this->post(route('urls.store'), $data);
         $countAfter = DB::table('urls')->count();
 
         self::assertEquals($countBefore, $countAfter);
@@ -44,6 +55,12 @@ class UrlTest extends TestCase
     {
         $response = $this->get(route('urls.show', ['url' => 1]));
         $response->assertOk();
+    }
+
+    public function testNonexistantShow(): void
+    {
+        $response = $this->get(route('urls.show', ['url' => 10]));
+        $response->assertStatus(404);
     }
 
     public function testIndex(): void

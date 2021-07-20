@@ -61,7 +61,7 @@
 						<tr>
 							<th scope="row">{{$url->id}}</th>
 							<td><a href="{{ route('urls.show', $url->id) }}">{{$url->name}}</a></td>
-							<td>{{$url->created_at ?? '-'}}</td>
+							<td>{{$url->last_check_at ?? '-'}}</td>
 							<td>{{$url->status_code ?? '-'}}</td>
 						</tr>
 						@endforeach
