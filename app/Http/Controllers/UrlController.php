@@ -46,7 +46,7 @@ class UrlController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate(['url.name' => 'required|url']);
+        $data = $request->validate(['url.name' => 'url']);
 
         $urlName = $data['url']['name'];
         $componentsUrl = parse_url(strtolower($urlName));
